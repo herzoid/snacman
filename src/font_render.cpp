@@ -1,4 +1,4 @@
-#include "font_render.hpp"
+#include "../include/font_render.hpp"
 
 bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor)
 {

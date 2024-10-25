@@ -1,4 +1,4 @@
-#include "entity.hpp"
+#include "../include/entity.hpp"
 
 Entity::Entity(Vect2f pPos)
     : pos(pPos)

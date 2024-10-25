@@ -1,4 +1,4 @@
-#include "math.hpp"
+#include "../include/math.hpp"
 
 int mandelbrot(std::complex<double> c, int maxIter)
 {

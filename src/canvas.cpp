@@ -1,4 +1,4 @@
-#include "canvas.hpp"
+#include "../include/canvas.hpp"
 
 Canvas::Canvas(const char *windowName, int windowWidth, int windowHeight)
     : window(NULL), renderer(NULL), r(0), g(0), b(0), alpha(255)

@@ -6,12 +6,17 @@
 #include <sstream>
 #include <iomanip>
 
-#include "canvas.hpp"
-#include "entity.hpp"
-#include "utils.hpp"
+#include "../include/canvas.hpp"
+#include "../include/entity.hpp"
+#include "../include/utils.hpp"
+#include "../include/eHandler.hpp"
 
 #define FONTNAME "/usr/share/fonts/TTF/RobotoMono-Regular.ttf"
 
+/// @brief 
+/// @param argc 
+/// @param argv 
+/// @return 
 int main(int argc, char const *argv[])
 {
     // std::cout << argv[0] << "\n";
@@ -27,6 +32,9 @@ int main(int argc, char const *argv[])
     if (newCanvas.is_init())
     {
         SDL_Event e;
+
+        eHandler handlObj;
+
         // SDL_TextInputEvent te;
         Vect2f crd, crd2, fixedCrd;
         crd.x = 100;
@@ -40,28 +48,10 @@ int main(int argc, char const *argv[])
         // State of coordinates fixation
         bool coordSet = 0;
 
-        // Movement directions
-        typedef enum
-        {
-            TO_UP,
-            TO_DOWN,
-            TO_LEFT,
-            TO_RIGHT
-        } moveDirection;
+        // Sets initial movement direction
         moveDirection mvDir = TO_RIGHT;
 
-        // Turning directions type
-        typedef enum
-        {
-            FROM_UP_TO_LEFT,
-            FROM_UP_TO_RIGHT,
-            FROM_DOWN_TO_LEFT,
-            FROM_DOWN_TO_RIGHT,
-            FROM_LEFT_TO_UP,
-            FROM_LEFT_TO_DOWN,
-            FROM_RIGHT_TO_UP,
-            FROM_RIGHT_TO_DOWN
-        } turnDirection;
+        // Turn direction
         turnDirection trnDir;
 
         // Start angle and end angle of mouth
@@ -89,7 +79,9 @@ int main(int argc, char const *argv[])
             Uint64 frameStart = SDL_GetTicks64();
             Uint64 frameCount;
 
-            int prevDir = mvDir;
+            // handlObj.poll_events(&e);
+            // quit = handlObj.exit();
+
             // Polling events
             while (SDL_PollEvent(&e))
             {
