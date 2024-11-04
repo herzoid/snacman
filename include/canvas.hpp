@@ -26,7 +26,7 @@ public:
     void render_rectangle(Vect2f crd, int w, int h);
     void render_circle(Vect2f crd, int rad, int r, int g, int b, int a);
     void render_pie(Vect2f crd, int rad, int start, int end, int r, int g, int b, int a);
-    void render_entity(Entity ent);
+    void render_entity(Entity *ent, int r, int g, int b, int a);
 
     /// @brief Render text on created canvas
     /// @param x X coordinate
@@ -59,4 +59,5 @@ private:
     int g;
     int b;
     int alpha;
+    Entity *entity;
 };

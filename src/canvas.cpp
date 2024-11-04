@@ -1,4 +1,5 @@
 #include "../include/canvas.hpp"
+#include "canvas.hpp"
 
 Canvas::Canvas(const char *windowName, int windowWidth, int windowHeight)
     : window(NULL), renderer(NULL), r(0), g(0), b(0), alpha(255)
@@ -90,18 +91,18 @@ void Canvas::set_color(int r, int g, int b, int alpha)
 
 void Canvas::render(Entity &pEntity)
 {
-    SDL_Rect src;
-    src.x = pEntity.getCurFrame().x;
-    src.y = pEntity.getCurFrame().y;
-    src.w = pEntity.getCurFrame().w;
-    src.h = pEntity.getCurFrame().h;
-    SDL_Rect dst;
-    dst.x = pEntity.get_pos().x;
-    dst.y = pEntity.get_pos().y;
-    dst.w = pEntity.getCurFrame().w;
-    dst.h = pEntity.getCurFrame().h;
+    // SDL_Rect src;
+    // src.x = pEntity.getCurFrame().x;
+    // src.y = pEntity.getCurFrame().y;
+    // src.w = pEntity.getCurFrame().w;
+    // src.h = pEntity.getCurFrame().h;
+    // SDL_Rect dst;
+    // dst.x = pEntity.get_seg_pos().x;
+    // dst.y = pEntity.get_seg_pos().y;
+    // dst.w = pEntity.getCurFrame().w;
+    // dst.h = pEntity.getCurFrame().h;
 
-    SDL_RenderCopy(renderer, pEntity.get_texture(), &src, &dst);
+    // SDL_RenderCopy(renderer, pEntity.get_texture(), &src, &dst);
 }
 
 void Canvas::render_pixel(Vect2f coord)
@@ -136,8 +137,14 @@ void Canvas::render_pie(Vect2f crd, int rad, int start, int end, int r, int g, i
     filledPieRGBA(renderer, crd.x, crd.y, rad, start, end, r, g, b, a);
 }
 
-void Canvas::render_entity(Entity ent)
+void Canvas::render_entity(Entity *ent, int r, int g, int b, int a)
 {
+    // entity = ent;
+    render_pie(ent->get_seg_pos(0), ent->get_radius(), ent->mouthCurrentAngle.start, ent->mouthCurrentAngle.end, r, g, b, 255);
+    for (size_t i = 1; i < ent->get_segs_num(); i++)
+    {
+        render_circle(ent->get_seg_pos(i), ent->get_radius(), r, g, b, 255);
+    }
 }
 
 SDL_Rect Canvas::render_text(int x, int y, const char *fontName, int fontSize, std::string text, SDL_Color fgColor, SDL_Color bgColor)

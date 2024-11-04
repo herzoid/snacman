@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(sdltest)
+project(snacman)
 
-set(SDL2_STATIC ON)
+# set(SDL2_STATIC ON)
 
 message("The path is:" ${CMAKE_CURRENT_SOURCE_DIR})
 
-# target_include_directories(/include)
+# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_executable(
     ${PROJECT_NAME}
@@ -19,6 +19,9 @@ add_executable(
 
 find_package(SDL2 REQUIRED)
 
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+# include_directories(${CMAKE_SOURCE_DIR}/include)
+
 set_target_properties(
     ${PROJECT_NAME} PROPERTIES
     CXX_STANDARD 17
@@ -28,6 +31,6 @@ add_compile_options(-Wall)
 
 #find_library(SDL_LIB SDL2)
 target_link_libraries(${PROJECT_NAME} SDL2 SDL2_image SDL2_ttf SDL2_gfx)
-#target_link_libraries(${PROJECT_NAME} SDL2 SDL2_image)
+
 
 

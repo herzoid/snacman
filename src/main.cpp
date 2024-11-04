@@ -8,15 +8,10 @@
 
 #include "../include/canvas.hpp"
 #include "../include/entity.hpp"
-#include "../include/utils.hpp"
 #include "../include/eHandler.hpp"
 
 #define FONTNAME "/usr/share/fonts/TTF/RobotoMono-Regular.ttf"
 
-/// @brief 
-/// @param argc 
-/// @param argv 
-/// @return 
 int main(int argc, char const *argv[])
 {
     // std::cout << argv[0] << "\n";
@@ -31,9 +26,11 @@ int main(int argc, char const *argv[])
 
     if (newCanvas.is_init())
     {
+        // Get display mode
+        SDL_DisplayMode dm;
         SDL_Event e;
 
-        eHandler handlObj;
+        EventHandler eHandler;
 
         // SDL_TextInputEvent te;
         Vect2f crd, crd2, fixedCrd;
@@ -48,11 +45,11 @@ int main(int argc, char const *argv[])
         // State of coordinates fixation
         bool coordSet = 0;
 
-        // Sets initial movement direction
-        moveDirection mvDir = TO_RIGHT;
+        // Movement move;
 
-        // Turn direction
-        turnDirection trnDir;
+        Entity snake = Entity();
+        // snake.mov.direction = TO_RIGHT;
+        // snake.mov.velocity = 1;
 
         // Start angle and end angle of mouth
         struct maDegree
@@ -62,16 +59,13 @@ int main(int argc, char const *argv[])
         } mouthAngle;
 
         // Mouth opening angle
-        int Angle = 0;
+        // int Angle = 0;
 
         // Segment radius
         int segRadius = 20;
 
         // Interval between a segmets
-        int segInterval = 30;
-
-        // Track
-        std::vector<Vect2f> track, track_2;
+        int segInterval = segRadius * 1.5;
 
         // Main loop
         while (!quit)
@@ -79,11 +73,12 @@ int main(int argc, char const *argv[])
             Uint64 frameStart = SDL_GetTicks64();
             Uint64 frameCount;
 
-            // handlObj.poll_events(&e);
-            // quit = handlObj.exit();
+            eHandler.poll_events(&e);
+            eHandler.manage_entity(&snake);
+            quit = eHandler.exit();
 
             // Polling events
-            while (SDL_PollEvent(&e))
+            /* while (SDL_PollEvent(&e))
             {
                 switch (e.type)
                 {
@@ -175,23 +170,23 @@ int main(int argc, char const *argv[])
                     // std::cout << SDL_GetKeyName(e.key.keysym.sym) << "\n";
                     break;
                 }
-            }
-            // Get display mode
-            SDL_DisplayMode dm;
-            SDL_GetWindowDisplayMode(newCanvas.get_window(), &dm);
+            } */
 
-            switch (mvDir)
+            SDL_GetWindowDisplayMode(newCanvas.get_window(), &dm);
+            snake.detect_display_mode(&dm);
+
+            /* switch (move.movD)
             {
             case TO_UP:
                 // Fixes initial coordinates in turning
-                if (!coordSet)
+                if (!move.coordSet)
                 {
                     fixedCrd.y = crd.y;
                     fixedCrd.x = crd.x;
-                    coordSet = true;
+                    move.coordSet = true;
                 }
                 // Evaluates turn direction
-                switch (trnDir)
+                switch (move.turnD)
                 {
                 case FROM_LEFT_TO_UP:
                     // Calculates turn animation
@@ -251,14 +246,14 @@ int main(int argc, char const *argv[])
 
             case TO_DOWN:
                 // Fixes initial coordinates in turning
-                if (!coordSet)
+                if (!move.coordSet)
                 {
                     fixedCrd.y = crd.y;
                     fixedCrd.x = crd.x;
-                    coordSet = true;
+                    move.coordSet = true;
                 }
 
-                switch (trnDir)
+                switch (move.turnD)
                 {
                 case FROM_LEFT_TO_DOWN:
                     // Calculates turning animation
@@ -317,14 +312,14 @@ int main(int argc, char const *argv[])
 
             case TO_LEFT:
                 // Fixes initial coordinates in turning
-                if (!coordSet)
+                if (!move.coordSet)
                 {
                     fixedCrd.y = crd.y;
                     fixedCrd.x = crd.x;
-                    coordSet = true;
+                    move.coordSet = true;
                 }
 
-                switch (trnDir)
+                switch (move.turnD)
                 {
                 case FROM_UP_TO_LEFT:
                     // Calculates turning animation
@@ -383,14 +378,14 @@ int main(int argc, char const *argv[])
 
             case TO_RIGHT:
                 // Fixes initial coordinates in turning
-                if (!coordSet)
+                if (!move.coordSet)
                 {
                     fixedCrd.y = crd.y;
                     fixedCrd.x = crd.x;
-                    coordSet = true;
+                    move.coordSet = true;
                 }
 
-                switch (trnDir)
+                switch (move.turnD)
                 {
                 case FROM_UP_TO_RIGHT:
                     // Calculates turning animation
@@ -450,42 +445,19 @@ int main(int argc, char const *argv[])
             default:
                 break;
             }
+ */
 
             newCanvas.set_color(r, g, b, 255);
-            // std::random_device rd;
-            // std::mt19937 rng(rd());
-            // std::uniform_int_distribution<int> uniW(0, dm.w), uniH(0, dm.h), uniRGB(0, maxRGB), uniD(0, segRadius0);
-            // newCanvas.render_circle(Vect2f(uniW(rng), uniH(rng)), uniD(rng), uniRGB(rng), uniRGB(rng), uniRGB(rng), 255);
-            // newCanvas.render_circle(crd, segRadius, uniRGB(rng), uniRGB(rng), uniRGB(rng), 255);
-            // newCanvas.render_circle(crd, 10, 0, 150, 100, 255);
 
-            // Mouth animation
-            int dA;
-            if ((Angle == 0))
-            {
-                dA = 5;
-            };
-            if (Angle > 35)
-            {
-                dA = -5;
-            };
-            Angle = Angle + dA;
+            snake.calc_seg_position();
 
-            newCanvas.render_pie(crd, segRadius, mouthAngle.start - Angle, mouthAngle.end + Angle, r, g, b, 255);
-            // Vect2f crd3;
-            // std::vector<Vect2f> crdV;
-            // crd2.x = crd.x - segInterval;
-            // crd2.y = crd.y;
-            // crd3.x = crd.x - 60;
-            // crd3.y = crd.y;
-            // crdV.clear();
-            // crdV.push_back(crd2);
-            // crdV.push_back(crd3);
-            // for (size_t i = 0; i < 2; i++)
+            newCanvas.render_entity(&snake, r, g, b, 255);
+
+            // newCanvas.render_pie(snake.get_seg_pos(0), snake.get_radius(), snake.mouthCurrentAngle.start, snake.mouthCurrentAngle.end, r, g, b, 255);
+            // for (size_t i = 1; i < snake.get_segs_num(); i++)
             // {
-            //     newCanvas.render_circle(crdV[i], segRadius, r, g, b, 255);
+            //     newCanvas.render_circle(snake.get_seg_pos(i), snake.get_radius(), r, g, b, 255);
             // }
-            newCanvas.render_circle(crd2, segRadius, r, g, b, 255);
 
             newCanvas.redraw();
             newCanvas.clear();
@@ -509,12 +481,12 @@ int main(int argc, char const *argv[])
                       << " FPS " << static_cast<int>(FPS)
                       << " Frames from start " << ++frameCount;
             std::stringstream crdInfo;
-            crdInfo << "x=" << crd.x
-                    << " y=" << crd.y;
 
-            SDL_Color textColor = {255, 255, 255, 0};
-            int ht = newCanvas.render_text(0, 0, FONTNAME, 14, graphInfo.str(), textColor, {0, 0, 0, 0}).h;
-            newCanvas.render_text(0, ht, FONTNAME, 14, crdInfo.str(), textColor, {0, 0, 0, 0});
+            crdInfo << "x=" << snake.get_seg_pos(0).x
+                    << " y=" << snake.get_seg_pos(0).y;
+
+            int ht = newCanvas.render_text(0, 0, FONTNAME, 14, graphInfo.str(), {255, 255, 255, 0}, {0, 0, 0, 0}).h;
+            newCanvas.render_text(0, ht, FONTNAME, 14, crdInfo.str(), {255, 255, 255, 0}, {0, 0, 0, 0});
         }
 
         std::cout << "Canvas created"

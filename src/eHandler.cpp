@@ -1,11 +1,54 @@
 #include "../include/eHandler.hpp"
+#include "eHandler.hpp"
 
-void eHandler::key_handling()
+void EventHandler::keypress_handling()
 {
     switch (event->key.keysym.sym)
     {
     case SDLK_ESCAPE:
-        Quit = true;
+        quit = true;
+        break;
+
+    case SDLK_RIGHT:
+        // Check current direction and set new
+        if (entity->mov.direction != TO_LEFT && entity->mov.direction != TO_RIGHT)
+        {
+            entity->mov.direction == TO_UP ? entity->mov.turn = FROM_DOWN_TO_RIGHT : entity->mov.turn = FROM_UP_TO_RIGHT;
+            entity->mov.direction = TO_RIGHT;
+            // Reset coordinates fixation
+            entity->mov.coordSet = 0;
+        }
+        break;
+    case SDLK_LEFT:
+        // Check current direction and set new
+        if (entity->mov.direction != TO_RIGHT && entity->mov.direction != TO_LEFT)
+        {
+            entity->mov.direction == TO_UP ? entity->mov.turn = FROM_DOWN_TO_LEFT : entity->mov.turn = FROM_UP_TO_LEFT;
+            entity->mov.direction = TO_LEFT;
+            entity->mov.coordSet = 0;
+        }
+        break;
+    case SDLK_UP:
+        // Check current direction and set new
+        if (entity->mov.direction != TO_DOWN && entity->mov.direction != TO_UP)
+        {
+            entity->mov.direction == TO_LEFT ? entity->mov.turn = FROM_RIGHT_TO_UP : entity->mov.turn = FROM_LEFT_TO_UP;
+            entity->mov.direction = TO_UP;
+            entity->mov.coordSet = 0;
+        }
+        break;
+    case SDLK_DOWN:
+        // Check current direction and set new
+        if (entity->mov.direction != TO_UP && entity->mov.direction != TO_DOWN)
+        {
+            entity->mov.direction == TO_LEFT ? entity->mov.turn = FROM_RIGHT_TO_DOWN : entity->mov.turn = FROM_LEFT_TO_DOWN;
+            entity->mov.direction = TO_DOWN;
+            entity->mov.coordSet = 0;
+        }
+        break;
+
+    case SDLK_p:
+        entity->add_segment();
         break;
 
     default:
@@ -13,15 +56,15 @@ void eHandler::key_handling()
     }
 }
 
-eHandler::eHandler() : Quit(false)
+EventHandler::EventHandler() : quit(false)
 {
 }
 
-eHandler::~eHandler()
+EventHandler::~EventHandler()
 {
 }
 
-void eHandler::poll_events(SDL_Event *e)
+void EventHandler::poll_events(SDL_Event *e)
 {
     event = e;
     while (SDL_PollEvent(event))
@@ -29,10 +72,10 @@ void eHandler::poll_events(SDL_Event *e)
         switch (event->type)
         {
         case SDL_QUIT:
-            /* code */
+            quit = true;
             break;
         case SDL_KEYDOWN:
-            key_handling();
+            keypress_handling();
             break;
 
         default:
@@ -41,7 +84,11 @@ void eHandler::poll_events(SDL_Event *e)
     }
 }
 
-bool eHandler::exit()
+void EventHandler::manage_entity(Entity *ent)
 {
-    return Quit;
+    entity = ent;
+}
+bool EventHandler::exit()
+{
+    return quit;
 }
