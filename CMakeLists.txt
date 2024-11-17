@@ -19,7 +19,7 @@ add_executable(
 
 find_package(SDL2 REQUIRED)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 # include_directories(${CMAKE_SOURCE_DIR}/include)
 
 set_target_properties(

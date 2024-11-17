@@ -15,6 +15,7 @@ void EventHandler::keypress_handling()
         {
             entity->mov.direction == TO_UP ? entity->mov.turn = FROM_DOWN_TO_RIGHT : entity->mov.turn = FROM_UP_TO_RIGHT;
             entity->mov.direction = TO_RIGHT;
+            entity->fix_turn_data();
             // Reset coordinates fixation
             entity->mov.coordSet = 0;
         }
@@ -34,6 +35,7 @@ void EventHandler::keypress_handling()
         {
             entity->mov.direction == TO_LEFT ? entity->mov.turn = FROM_RIGHT_TO_UP : entity->mov.turn = FROM_LEFT_TO_UP;
             entity->mov.direction = TO_UP;
+            entity->fix_turn_data();
             entity->mov.coordSet = 0;
         }
         break;

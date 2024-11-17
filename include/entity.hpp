@@ -4,6 +4,7 @@
 #include <SDL2/SDL_image.h>
 #include <vector>
 #include <tuple>
+#include <utility>
 
 #include "math.hpp"
 // #include "utils.hpp"
@@ -75,6 +76,10 @@ private:
     /// @brief Calculates current angle of the mouth
     void calc_mouth_angle();
 
+    /// @brief Returns turn data
+    /// @return Coordinates or turn direction or segments number
+    auto get_turn_data(std::tuple<Vect2f, turnDirection, int> &t, int item);
+
 public:
     /// @brief The structure that defines movement
     struct MovementStruct
@@ -83,6 +88,7 @@ public:
         turnDirection turn;
         int velocity;
         bool coordSet;
+        /// @brief MovementSruct constructor
         MovementStruct();
     };
 
@@ -103,6 +109,9 @@ public:
 
     /// @brief Current angle of the mouth
     mouthStruct mouthCurrentAngle;
+
+    /// @brief Sets turn coordinates
+    void fix_turn_data();
 
     void add_segment();
 };
