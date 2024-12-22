@@ -137,6 +137,15 @@ void Canvas::render_pie(Vect2f crd, int rad, int start, int end, int r, int g, i
     filledPieRGBA(renderer, crd.x, crd.y, rad, start, end, r, g, b, a);
 }
 
+void Canvas::render_rbox(Vect2f crd, int diag, int rad, int r, int g, int b, int a)
+{
+    Sint16 x1 = crd.x - cos(45 * M_PI / 180) * diag;
+    Sint16 y1 = crd.y + cos(45 * M_PI / 180) * diag;
+    Sint16 x2 = crd.x + cos(45 * M_PI / 180) * diag;
+    Sint16 y2 = crd.y - cos(45 * M_PI / 180) * diag;
+    roundedBoxRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
+}
+
 void Canvas::render_entity(Entity *ent, int r, int g, int b, int a)
 {
     // entity = ent;
@@ -144,6 +153,7 @@ void Canvas::render_entity(Entity *ent, int r, int g, int b, int a)
     for (size_t i = 1; i < ent->get_segs_num(); i++)
     {
         render_circle(ent->get_seg_pos(i), ent->get_radius(), r, g, b, 255);
+        // render_rbox(ent->get_seg_pos(i), ent->get_radius(), 2, r, g, b, 255);
     }
 }
 

@@ -9,12 +9,12 @@ struct Vect2f
     {
     }
 
-    Vect2f(float pX, float pY)
+    Vect2f(double pX, double pY)
         : x(pX), y(pY)
     {
     }
 
-    float x, y;
+    double x, y;
 };
 
 int mandelbrot(std::complex<double> c, int maxIter);

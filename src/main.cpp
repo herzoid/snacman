@@ -10,7 +10,7 @@
 #include "../include/entity.hpp"
 #include "../include/eHandler.hpp"
 
-#define FONTNAME "/usr/share/fonts/TTF/RobotoMono-Regular.ttf"
+#define FONTNAME "/usr/share/fonts/TTF/DejaVuSansMono.ttf"
 
 int main(int argc, char const *argv[])
 {
@@ -42,30 +42,9 @@ int main(int argc, char const *argv[])
         int b = 255;
         bool quit = false;
 
-        // State of coordinates fixation
-        bool coordSet = 0;
-
         // Movement move;
 
         Entity snake = Entity();
-        // snake.mov.direction = TO_RIGHT;
-        // snake.mov.velocity = 1;
-
-        // Start angle and end angle of mouth
-        struct maDegree
-        {
-            int start;
-            int end;
-        } mouthAngle;
-
-        // Mouth opening angle
-        // int Angle = 0;
-
-        // Segment radius
-        int segRadius = 20;
-
-        // Interval between a segmets
-        int segInterval = segRadius * 1.5;
 
         // Main loop
         while (!quit)
@@ -174,290 +153,17 @@ int main(int argc, char const *argv[])
 
             SDL_GetWindowDisplayMode(newCanvas.get_window(), &dm);
             snake.detect_display_mode(&dm);
-
-            /* switch (move.movD)
-            {
-            case TO_UP:
-                // Fixes initial coordinates in turning
-                if (!move.coordSet)
-                {
-                    fixedCrd.y = crd.y;
-                    fixedCrd.x = crd.x;
-                    move.coordSet = true;
-                }
-                // Evaluates turn direction
-                switch (move.turnD)
-                {
-                case FROM_LEFT_TO_UP:
-                    // Calculates turn animation
-                    if (abs(fixedCrd.y - crd.y) < segInterval)
-                    {
-                        crd2.x = crd.x - sqrt(-pow(fixedCrd.y, 2) + 2 * crd.y * fixedCrd.y - pow(crd.y, 2) + pow(segInterval, 2));
-                    }
-                    else
-                        crd2.x = fixedCrd.x;
-
-                    if (crd2.x < fixedCrd.x)
-                    {
-                        crd2.y = fixedCrd.y;
-                    }
-                    else
-                        crd2.y = crd.y + segInterval;
-
-                    break;
-
-                case FROM_RIGHT_TO_UP:
-                    // Calculates turn animation
-                    if (abs(fixedCrd.y - crd.y) < segInterval)
-                    {
-                        crd2.x = crd.x + sqrt(-pow(fixedCrd.y, 2) + 2 * crd.y * fixedCrd.y - pow(crd.y, 2) + pow(segInterval, 2));
-                    }
-                    else
-                        crd2.x = fixedCrd.x;
-
-                    if (crd2.x > fixedCrd.x)
-                    {
-                        crd2.y = fixedCrd.y;
-                    }
-                    else
-                        crd2.y = crd.y + segInterval;
-
-                    break;
-
-                default:
-                    crd2.x = crd.x;
-                    crd2.y = crd.y + segInterval;
-                    break;
-                }
-                // Movement animation
-                crd.y -= dp;
-
-                // Window bounds collision
-                if (crd.y <= segRadius)
-                {
-                    crd.y = segRadius;
-                }
-
-                // Mouth bounds
-                mouthAngle.start = 315;
-                mouthAngle.end = 225;
-
-                break;
-
-            case TO_DOWN:
-                // Fixes initial coordinates in turning
-                if (!move.coordSet)
-                {
-                    fixedCrd.y = crd.y;
-                    fixedCrd.x = crd.x;
-                    move.coordSet = true;
-                }
-
-                switch (move.turnD)
-                {
-                case FROM_LEFT_TO_DOWN:
-                    // Calculates turning animation
-                    if (abs(fixedCrd.y - crd.y) < segInterval)
-                    {
-                        crd2.x = crd.x - sqrt(-pow(fixedCrd.y, 2) + 2 * crd.y * fixedCrd.y - pow(crd.y, 2) + pow(segInterval, 2));
-                    }
-                    else
-                        crd2.x = fixedCrd.x;
-
-                    if (crd2.x < fixedCrd.x)
-                    {
-                        crd2.y = fixedCrd.y;
-                    }
-                    else
-                        crd2.y = crd.y - segInterval;
-                    break;
-
-                case FROM_RIGHT_TO_DOWN:
-                    // Calculates turning animation
-                    if (abs(fixedCrd.y - crd.y) < segInterval)
-                    {
-                        crd2.x = crd.x + sqrt(-pow(fixedCrd.y, 2) + 2 * crd.y * fixedCrd.y - pow(crd.y, 2) + pow(segInterval, 2));
-                    }
-                    else
-                        crd2.x = fixedCrd.x;
-
-                    if (crd2.x > fixedCrd.x)
-                    {
-                        crd2.y = fixedCrd.y;
-                    }
-                    else
-                        crd2.y = crd.y - segInterval;
-                    break;
-
-                default:
-                    crd2.x = crd.x;
-                    crd2.y = crd.y - segInterval;
-                    break;
-                }
-
-                // Movement animation
-                crd.y += dp;
-
-                // Window bounds collision
-                if (crd.y >= dm.h - segRadius)
-                {
-                    crd.y = dm.h - segRadius;
-                }
-
-                // Mouth bounds
-                mouthAngle.start = 135;
-                mouthAngle.end = 45;
-
-                break;
-
-            case TO_LEFT:
-                // Fixes initial coordinates in turning
-                if (!move.coordSet)
-                {
-                    fixedCrd.y = crd.y;
-                    fixedCrd.x = crd.x;
-                    move.coordSet = true;
-                }
-
-                switch (move.turnD)
-                {
-                case FROM_UP_TO_LEFT:
-                    // Calculates turning animation
-                    if (abs(fixedCrd.x - crd.x) < segInterval)
-                    {
-                        crd2.y = crd.y - sqrt(-pow(fixedCrd.x, 2) + 2 * crd.x * fixedCrd.x - pow(crd.x, 2) + pow(segInterval, 2));
-                    }
-                    else
-                        crd2.y = fixedCrd.y;
-
-                    if (crd2.y < fixedCrd.y)
-                    {
-                        crd2.x = fixedCrd.x;
-                    }
-                    else
-                        crd2.x = crd.x + segInterval;
-                    break;
-
-                case FROM_DOWN_TO_LEFT:
-                    // Calculates turning animation
-                    if (abs(fixedCrd.x - crd.x) < segInterval)
-                    {
-                        crd2.y = crd.y + sqrt(-pow(fixedCrd.x, 2) + 2 * crd.x * fixedCrd.x - pow(crd.x, 2) + pow(segInterval, 2));
-                    }
-                    else
-                        crd2.y = fixedCrd.y;
-
-                    if (crd2.y > fixedCrd.y)
-                    {
-                        crd2.x = fixedCrd.x;
-                    }
-                    else
-                        crd2.x = crd.x + segInterval;
-                    break;
-
-                default:
-                    crd2.x = crd.x + segInterval;
-                    crd2.y = crd.y;
-                    break;
-                }
-
-                // Movement animation
-                crd.x -= dp;
-
-                // Window bounds collision
-                if (crd.x <= segRadius)
-                {
-                    crd.x = segRadius;
-                }
-
-                // Mouth bounds
-                mouthAngle.start = 225;
-                mouthAngle.end = 135;
-
-                break;
-
-            case TO_RIGHT:
-                // Fixes initial coordinates in turning
-                if (!move.coordSet)
-                {
-                    fixedCrd.y = crd.y;
-                    fixedCrd.x = crd.x;
-                    move.coordSet = true;
-                }
-
-                switch (move.turnD)
-                {
-                case FROM_UP_TO_RIGHT:
-                    // Calculates turning animation
-                    if (abs(fixedCrd.x - crd.x) < segInterval)
-                    {
-                        crd2.y = crd.y - sqrt(-pow(fixedCrd.x, 2) + 2 * crd.x * fixedCrd.x - pow(crd.x, 2) + pow(segInterval, 2));
-                    }
-                    else
-                        crd2.y = fixedCrd.y;
-
-                    if (crd2.y < fixedCrd.y)
-                    {
-                        crd2.x = fixedCrd.x;
-                    }
-                    else
-                        crd2.x = crd.x - segInterval;
-                    break;
-
-                case FROM_DOWN_TO_RIGHT:
-                    // Calculates turning animation
-                    if (abs(fixedCrd.x - crd.x) < segInterval)
-                    {
-                        crd2.y = crd.y + sqrt(-pow(fixedCrd.x, 2) + 2 * crd.x * fixedCrd.x - pow(crd.x, 2) + pow(segInterval, 2));
-                    }
-                    else
-                        crd2.y = fixedCrd.y;
-
-                    if (crd2.y > fixedCrd.y)
-                    {
-                        crd2.x = fixedCrd.x;
-                    }
-                    else
-                        crd2.x = crd.x - segInterval;
-                    break;
-
-                default:
-                    crd2.x = crd.x - segInterval;
-                    crd2.y = crd.y;
-                    break;
-                }
-
-                // Movement animation
-                crd.x += dp;
-
-                // Window bounds collision
-                if (crd.x >= dm.w - segRadius)
-                {
-                    crd.x = dm.w - segRadius;
-                }
-
-                // Mouth bounds
-                mouthAngle.start = 45;
-                mouthAngle.end = 315;
-
-                break;
-
-            default:
-                break;
-            }
- */
+            SDL_SetWindowFullscreen(newCanvas.get_window(), eHandler.get_screen_mode());
 
             newCanvas.set_color(r, g, b, 255);
 
-            snake.calc_seg_position();
+            // snake.calc_seg_position();
+            snake.calc_segment_pos();
 
             newCanvas.render_entity(&snake, r, g, b, 255);
 
-            // newCanvas.render_pie(snake.get_seg_pos(0), snake.get_radius(), snake.mouthCurrentAngle.start, snake.mouthCurrentAngle.end, r, g, b, 255);
-            // for (size_t i = 1; i < snake.get_segs_num(); i++)
-            // {
-            //     newCanvas.render_circle(snake.get_seg_pos(i), snake.get_radius(), r, g, b, 255);
-            // }
+            // Vect2f crdBox(100, 200);
+            // newCanvas.render_rbox(crdBox, 10, 0, r, g, b, 255);
 
             newCanvas.redraw();
             newCanvas.clear();

@@ -21,14 +21,14 @@ typedef enum
 // Turning directions type
 typedef enum
 {
-    FROM_UP_TO_LEFT,
-    FROM_UP_TO_RIGHT,
-    FROM_DOWN_TO_LEFT,
-    FROM_DOWN_TO_RIGHT,
-    FROM_LEFT_TO_UP,
-    FROM_LEFT_TO_DOWN,
-    FROM_RIGHT_TO_UP,
-    FROM_RIGHT_TO_DOWN
+    FROM_UP_TO_LEFT = 103,
+    FROM_UP_TO_RIGHT = 151,
+    FROM_DOWN_TO_LEFT = 104,
+    FROM_DOWN_TO_RIGHT = 152,
+    FROM_LEFT_TO_UP = 137,
+    FROM_LEFT_TO_DOWN = 121,
+    FROM_RIGHT_TO_UP = 134,
+    FROM_RIGHT_TO_DOWN = 118
 } turnDirection;
 
 class Entity
@@ -38,16 +38,18 @@ private:
     Vect2f position;
 
     /// @brief Radius if the segment
-    int segRadius;
+    double segRadius;
 
     /// @brief Interval between segments
-    int segInterval;
+    double segInterval;
 
     /// @brief The angle of the mouth
     int mouthAngle;
 
     /// @brief
     int incAngle;
+
+    double flexRatio;
 
     /// @brief Pointer to struct SDL_DisplayMode
     SDL_DisplayMode *dmode;
@@ -64,11 +66,12 @@ private:
     /// @brief Represents bounds of the mouth
     mouthStruct mouthBounds;
 
-    /// @brief Number of segments
+    /// @brief Number of the segments
     int segNum;
 
     /// @brief Coordinates of every body segment's of snake
-    std::vector<Vect2f> segsPos;
+    // std::vector<Vect2f> segsPos;
+    std::vector<std::pair<Vect2f, movementDirection>> segsPos;
 
     /// @brief Stores the coordinates of the turns
     std::vector<std::tuple<Vect2f, turnDirection, int>> turnsPos;
@@ -104,8 +107,23 @@ public:
     SDL_Rect getCurFrame();
     void detect_display_mode(SDL_DisplayMode *dm);
 
+    /// @brief Sets the head segment movement direction
+    void set_head_direction(movementDirection mD);
+
+    /// @brief Makes the entity to move
+    void move_entity();
+
+    /// @brief Gets the head segment movement direction
+    movementDirection &get_seg_dir(int segNumber);
+
+    void set_seg_pos(int segNumber);
+
+    void set_head_dir(int segNumber);
+
     /// @brief Calculates coordinates of every body segment's center
     void calc_seg_position();
+
+    void calc_segment_pos();
 
     /// @brief Current angle of the mouth
     mouthStruct mouthCurrentAngle;
@@ -113,5 +131,11 @@ public:
     /// @brief Sets turn coordinates
     void fix_turn_data();
 
+    /// @brief Gets flexion ratio of the entity
+    double get_flexRatio();
+
+    /// @brief Adds a segment to entity
     void add_segment();
+
+    void drop_feed();
 };
