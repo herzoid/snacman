@@ -5,9 +5,12 @@
 #include <vector>
 #include <tuple>
 #include <utility>
+#include <random>
 
 #include "math.hpp"
 // #include "utils.hpp"
+
+#define intervalRatio 1.8
 
 // Movement directions
 typedef enum
@@ -51,6 +54,8 @@ private:
 
     double flexRatio;
 
+    bool foodIsDropped;
+
     /// @brief Pointer to struct SDL_DisplayMode
     SDL_DisplayMode *dmode;
 
@@ -76,8 +81,13 @@ private:
     /// @brief Stores the coordinates of the turns
     std::vector<std::tuple<Vect2f, turnDirection, int>> turnsPos;
 
+    /// @brief Stores the coordinates of the food
+    Vect2f foodPos;
+
     /// @brief Calculates current angle of the mouth
     void calc_mouth_angle();
+
+    void grow_up();
 
     /// @brief Returns turn data
     /// @return Coordinates or turn direction or segments number
@@ -99,10 +109,12 @@ public:
 
     Entity();
     Vect2f &get_seg_pos(int segNumber);
-    auto &get_turn_pos(int number);
+    Vect2f &get_turn_pos(int number);
+    bool check_turns();
+    int last_turn();
     int get_segs_num();
     int get_radius();
-    int get_seg_interval();
+    double get_seg_interval();
     SDL_Texture *get_texture();
     SDL_Rect getCurFrame();
     void detect_display_mode(SDL_DisplayMode *dm);
@@ -118,8 +130,6 @@ public:
 
     void set_seg_pos(int segNumber);
 
-    void set_head_dir(int segNumber);
-
     /// @brief Calculates coordinates of every body segment's center
     void calc_seg_position();
 
@@ -134,8 +144,14 @@ public:
     /// @brief Gets flexion ratio of the entity
     double get_flexRatio();
 
+    Vect2f get_food_pos();
+
     /// @brief Adds a segment to entity
     void add_segment();
 
-    void drop_feed();
+    void generate_food_position();
+
+    bool find_the_food();
+
+    void body_collision();
 };

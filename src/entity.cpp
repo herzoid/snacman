@@ -17,13 +17,20 @@ void Entity::calc_mouth_angle()
     mouthCurrentAngle.end = mouthBounds.end + mouthAngle;
 }
 
+void Entity::grow_up()
+{
+    add_segment();
+    // segRadius++;
+    // segInterval = segRadius * intervalRatio;
+}
+
 void Entity::fix_turn_data()
 {
-    if (!mov.coordSet)
-    {
-        turnsPos.emplace_back(std::make_tuple(get_seg_pos(0), mov.turn, 0));
-        mov.coordSet = true;
-    }
+    // if (!mov.coordSet)
+    // {
+    turnsPos.emplace_back(std::make_tuple(get_seg_pos(0), mov.turn, 0));
+    mov.coordSet = true;
+    // }
 }
 
 // template <std::size_t... Is>
@@ -41,9 +48,10 @@ Entity::Entity()
     : segNum(5),
       position(200, 600),
       segRadius(10),
-      segInterval(segRadius * 1.5),
+      segInterval(segRadius * intervalRatio),
       mouthAngle(0),
-      flexRatio(1)
+      flexRatio(1),
+      foodIsDropped(false)
 
 {
     for (size_t i = 0; i < segNum; i++)
@@ -67,6 +75,27 @@ Vect2f &Entity::get_seg_pos(int segNumber)
     return std::get<0>(segsPos.at(segNumber));
 }
 
+Vect2f &Entity::get_turn_pos(int number)
+{
+    return std::get<0>(turnsPos.at(turnsPos.size() - 1));
+}
+
+bool Entity::check_turns()
+{
+    return !turnsPos.size() ? false : true;
+    // if (turnsPos.size() !=)
+    // {
+    //     /* code */
+    // }
+
+    // return false;
+}
+
+int Entity::last_turn()
+{
+    return (turnsPos.size() - 1);
+}
+
 int Entity::get_segs_num()
 {
     return segsPos.size();
@@ -77,9 +106,9 @@ int Entity::get_radius()
     return segRadius;
 }
 
-int Entity::get_seg_interval()
+double Entity::get_seg_interval()
 {
-    return segRadius * 1.5;
+    return segInterval;
 }
 
 void Entity::detect_display_mode(SDL_DisplayMode *dm)
@@ -105,34 +134,68 @@ void Entity::move_entity()
         // Defines mouth bounds
         mouthBounds.start = 315;
         mouthBounds.end = 225;
+
         // Movement animation
         std::get<0>(segsPos.at(0)).y -= mov.velocity;
+
+        // Window bounds collision
+        if (std::get<0>(segsPos.at(0)).y <= segRadius)
+        {
+            std::get<0>(segsPos.at(0)).y = segRadius;
+        }
         break;
+
     case TO_RIGHT:
         // Defines mouth bounds
         mouthBounds.start = 45;
         mouthBounds.end = 315;
+
         // Movement animation
         std::get<0>(segsPos.at(0)).x += mov.velocity;
+
+        // Window bounds collision
+        if (std::get<0>(segsPos.at(0)).x >= dmode->w - segRadius)
+        {
+            std::get<0>(segsPos.at(0)).x = dmode->w - segRadius;
+        }
         break;
+
     case TO_DOWN:
         // Define mouth bounds
         mouthBounds.start = 135;
         mouthBounds.end = 45;
+
         // Movement animation
         std::get<0>(segsPos.at(0)).y += mov.velocity;
+
+        // Window bounds collision
+        if (std::get<0>(segsPos.at(0)).y >= dmode->h - segRadius)
+        {
+            std::get<0>(segsPos.at(0)).y = dmode->h - segRadius;
+        }
         break;
+
     case TO_LEFT:
         // Define mouth bounds
         mouthBounds.start = 225;
         mouthBounds.end = 135;
+
         // Movement animation
         std::get<0>(segsPos.at(0)).x -= mov.velocity;
+
+        // Window bounds collision
+        if (std::get<0>(segsPos.at(0)).x <= segRadius)
+        {
+            std::get<0>(segsPos.at(0)).x = segRadius;
+        }
         break;
 
     default:
         break;
     }
+
+    body_collision();
+
     calc_mouth_angle();
 }
 
@@ -531,8 +594,9 @@ void Entity::calc_segment_pos()
                     {
                         crd2.x = crd.x + sqrt(-pow(fixedCrd.y, 2) + 2 * crd.y * fixedCrd.y - pow(crd.y, 2) + pow(segInterval, 2));
                     }
-                    else /* if (crd2.x == fixedCrd.x) */
+                    else
                     {
+                        crd2.x == fixedCrd.x;
                         dirNext = TO_UP;
                         std::get<2>(*it)++;
                     }
@@ -550,8 +614,9 @@ void Entity::calc_segment_pos()
                     {
                         crd2.x = crd.x - sqrt(-pow(fixedCrd.y, 2) + 2 * crd.y * fixedCrd.y - pow(crd.y, 2) + pow(segInterval, 2));
                     }
-                    else /* if (crd2.y == fixedCrd.y) */
+                    else
                     {
+                        crd2.x == fixedCrd.x;
                         dirNext = TO_DOWN;
                         std::get<2>(*it)++;
                     }
@@ -569,8 +634,9 @@ void Entity::calc_segment_pos()
                     {
                         crd2.x = crd.x + sqrt(-pow(fixedCrd.y, 2) + 2 * crd.y * fixedCrd.y - pow(crd.y, 2) + pow(segInterval, 2));
                     }
-                    else /* if (crd2.y == fixedCrd.y) */
+                    else
                     {
+                        crd2.x == fixedCrd.x;
                         dirNext = TO_DOWN;
                         std::get<2>(*it)++;
                     }
@@ -588,8 +654,9 @@ void Entity::calc_segment_pos()
                     {
                         crd2.y = crd.y - sqrt(-pow(fixedCrd.x, 2) + 2 * crd.x * fixedCrd.x - pow(crd.x, 2) + pow(segInterval, 2));
                     }
-                    else /* if (crd2.y == fixedCrd.y) */
+                    else
                     {
+                        crd2.y == fixedCrd.y;
                         dirNext = TO_RIGHT;
                         std::get<2>(*it)++;
                     }
@@ -607,8 +674,9 @@ void Entity::calc_segment_pos()
                     {
                         crd2.y = crd.y - sqrt(-pow(fixedCrd.x, 2) + 2 * crd.x * fixedCrd.x - pow(crd.x, 2) + pow(segInterval, 2));
                     }
-                    else /* if (crd2.y == fixedCrd.y) */
+                    else
                     {
+                        crd2.y == fixedCrd.y;
                         dirNext = TO_LEFT;
                         std::get<2>(*it)++;
                     }
@@ -626,8 +694,9 @@ void Entity::calc_segment_pos()
                     {
                         crd2.y = crd.y + sqrt(-pow(fixedCrd.x, 2) + 2 * crd.x * fixedCrd.x - pow(crd.x, 2) + pow(segInterval, 2));
                     }
-                    else /* if (crd2.y == fixedCrd.y) */
+                    else
                     {
+                        crd2.y == fixedCrd.y;
                         dirNext = TO_RIGHT;
                         std::get<2>(*it)++;
                     }
@@ -645,8 +714,9 @@ void Entity::calc_segment_pos()
                     {
                         crd2.y = crd.y + sqrt(-pow(fixedCrd.x, 2) + 2 * crd.x * fixedCrd.x - pow(crd.x, 2) + pow(segInterval, 2));
                     }
-                    else /* if (crd2.y == fixedCrd.y) */
+                    else
                     {
+                        crd2.y == fixedCrd.y;
                         dirNext = TO_LEFT;
                         std::get<2>(*it)++;
                     }
@@ -674,6 +744,11 @@ void Entity::calc_segment_pos()
 double Entity::get_flexRatio()
 {
     return flexRatio;
+}
+
+Vect2f Entity::get_food_pos()
+{
+    return foodPos;
 }
 
 void Entity::add_segment()
@@ -708,6 +783,83 @@ void Entity::add_segment()
     segNum = segsPos.size();
 }
 
-Entity::MovementStruct::MovementStruct() : direction(TO_RIGHT), velocity(1)
+void Entity::generate_food_position()
+{
+    if (!foodIsDropped)
+    {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        int min = segInterval;
+        int maxX = dmode->w - segInterval;
+        int maxY = dmode->h - segInterval;
+        std::uniform_int_distribution distrX(min, maxX);
+        std::uniform_int_distribution distrY(min, maxY);
+        foodPos = Vect2f(distrX(gen), distrY(gen));
+        foodIsDropped = true;
+    }
+}
+
+bool Entity::find_the_food()
+{
+    int grabRadius = segRadius / 1.5;
+    if (abs(foodPos.x - get_seg_pos(0).x) <= grabRadius && abs(foodPos.y - get_seg_pos(0).y) <= grabRadius)
+    {
+        foodIsDropped = false;
+        grow_up();
+        return true;
+    }
+    else
+        return false;
+}
+
+void Entity::body_collision()
+{
+    bool checkXDistance;
+    bool checkYDistance;
+    for (size_t i = 5; i < segNum; i++)
+    {
+        switch (get_seg_dir(0))
+        {
+        case TO_UP:
+
+            checkXDistance = abs(get_seg_pos(0).x - get_seg_pos(i).x) <= 2 * segRadius;
+            checkYDistance = get_seg_pos(0).y > get_seg_pos(i).y && (abs(get_seg_pos(0).y - get_seg_pos(i).y) <= 2 * segRadius);
+            if (checkXDistance && checkYDistance)
+            {
+                std::get<0>(segsPos.at(0)).y = get_seg_pos(i).y + 2 * segRadius;
+            }
+            break;
+        case TO_DOWN:
+            checkXDistance = abs(get_seg_pos(0).x - get_seg_pos(i).x) <= 2 * segRadius;
+            checkYDistance = get_seg_pos(0).y < get_seg_pos(i).y && (abs(get_seg_pos(0).y - get_seg_pos(i).y) <= 2 * segRadius);
+            if (checkXDistance && checkYDistance)
+            {
+                std::get<0>(segsPos.at(0)).y = get_seg_pos(i).y - 2 * segRadius;
+            }
+            break;
+        case TO_RIGHT:
+            checkYDistance = abs(get_seg_pos(0).y - get_seg_pos(i).y) <= 2 * segRadius;
+            checkXDistance = get_seg_pos(0).x < get_seg_pos(i).x && (abs(get_seg_pos(0).x - get_seg_pos(i).x) <= 2 * segRadius);
+            if (checkXDistance && checkYDistance)
+            {
+                std::get<0>(segsPos.at(0)).x = get_seg_pos(i).x - 2 * segRadius;
+            }
+            break;
+        case TO_LEFT:
+            checkYDistance = abs(get_seg_pos(0).y - get_seg_pos(i).y) <= 2 * segRadius;
+            checkXDistance = get_seg_pos(0).x > get_seg_pos(i).x && (abs(get_seg_pos(0).x - get_seg_pos(i).x) <= 2 * segRadius);
+            if (checkXDistance && checkYDistance)
+            {
+                std::get<0>(segsPos.at(0)).x = get_seg_pos(i).x + 2 * segRadius;
+            }
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
+Entity::MovementStruct::MovementStruct() : direction(TO_RIGHT), velocity(2)
 {
 }

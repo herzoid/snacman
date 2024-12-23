@@ -11,6 +11,13 @@ void EventHandler::keypress_handling()
 
     case SDLK_RIGHT:
         // Check current direction and set new
+        // if (entity->check_turns())
+        // {
+        //     if (abs(entity->get_turn_pos(entity->last_turn()).y - entity->get_seg_pos(0).y) >= entity->get_seg_interval() * 2)
+        //     {
+        //         int t = 5;
+        //     }
+        // }
         if (entity->get_seg_dir(0) != TO_LEFT && entity->get_seg_dir(0) != TO_RIGHT)
         {
             if (abs(entity->get_seg_pos(0).y - entity->get_seg_pos(1).y) >= (entity->get_seg_interval() * entity->get_flexRatio()))
@@ -19,8 +26,6 @@ void EventHandler::keypress_handling()
                 entity->mov.direction = TO_RIGHT;
                 entity->set_head_direction(TO_RIGHT);
                 entity->fix_turn_data();
-                // Reset coordinates fixation
-                entity->mov.coordSet = 0;
             }
         }
         break;
@@ -34,8 +39,6 @@ void EventHandler::keypress_handling()
                 entity->mov.direction = TO_LEFT;
                 entity->set_head_direction(TO_LEFT);
                 entity->fix_turn_data();
-                // Reset coordinates fixation
-                entity->mov.coordSet = 0;
             }
         }
         break;
@@ -77,7 +80,7 @@ void EventHandler::keypress_handling()
     case SDLK_f:
         if (!screenMode)
         {
-            screenMode = SDL_WINDOW_FULLSCREEN;
+            screenMode = SDL_WINDOW_FULLSCREEN_DESKTOP;
         }
         else
             screenMode = 0;
