@@ -15,6 +15,7 @@ add_executable(
     src/entity.cpp
     src/math.cpp
     src/eHandler.cpp
+    src/sound.cpp
     )
 
 find_package(SDL2 REQUIRED)

@@ -27,7 +27,7 @@ Canvas::Canvas(const char *windowName, int windowWidth, int windowHeight)
     }
 
     // Create renderer
-    renderer = SDL_CreateRenderer(window, -1, /* SDL_RENDERER_SOFTWARE */ SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE /* SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC */);
     if (!renderer)
     {
         SDLInitSuccess = false;
@@ -129,7 +129,8 @@ void Canvas::render_rectangle(Vect2f crd, int w, int h)
 void Canvas::render_circle(Vect2f crd, int rad, int r, int g, int b, int a)
 {
 
-    filledCircleRGBA(renderer, crd.x, crd.y, rad, r, g, b, a);
+    // filledCircleRGBA(renderer, crd.x, crd.y, rad, r, g, b, a);
+    circleRGBA(renderer, crd.x, crd.y, rad, r, g, b, a);
 }
 
 void Canvas::render_pie(Vect2f crd, int rad, int start, int end, int r, int g, int b, int a)
@@ -146,13 +147,32 @@ void Canvas::render_rbox(Vect2f crd, int diag, int rad, int r, int g, int b, int
     roundedBoxRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
 }
 
+void Canvas::render_rrect(Vect2f crd, int diag, int rad, int r, int g, int b, int a)
+{
+    Sint16 x1 = crd.x - cos(45 * M_PI / 180) * diag;
+    Sint16 y1 = crd.y + cos(45 * M_PI / 180) * diag;
+    Sint16 x2 = crd.x + cos(45 * M_PI / 180) * diag;
+    Sint16 y2 = crd.y - cos(45 * M_PI / 180) * diag;
+    roundedRectangleRGBA(renderer, x1, y1, x2, y2, rad, r, g, b, a);
+}
+
 void Canvas::render_entity(Entity *ent, int r, int g, int b, int a)
 {
     // entity = ent;
     render_pie(ent->get_seg_pos(0), ent->get_radius(), ent->mouthCurrentAngle.start, ent->mouthCurrentAngle.end, r, g, b, 255);
     for (size_t i = 1; i < ent->get_segs_num(); i++)
     {
-        render_circle(ent->get_seg_pos(i), ent->get_radius(), r, g, b, 255);
+        // render_circle(ent->get_seg_pos(i), ent->get_radius(), r, g, b, 255);
+        // render_rbox(ent->get_seg_pos(i), ent->get_radius(), 3, r, g, b, 255);
+        render_rrect(ent->get_seg_pos(i), ent->get_radius() + 2, 5, r, g, b, 255);
+    }
+}
+
+void Canvas::render_lent(Entity *ent)
+{
+    for (size_t i = 1; i < ent->get_segs_num(); i++)
+    {
+        render_line(ent->get_seg_pos(i-1), ent->get_seg_pos(i));
         // render_rbox(ent->get_seg_pos(i), ent->get_radius(), 2, r, g, b, 255);
     }
 }

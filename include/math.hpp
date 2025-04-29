@@ -5,16 +5,16 @@
 struct Vect2f
 {
     Vect2f()
-        : x(0.0f), y(0.0f)
+        : x(0), y(0)
     {
     }
 
-    Vect2f(double pX, double pY)
+    Vect2f(int pX, int pY)
         : x(pX), y(pY)
     {
     }
 
-    double x, y;
+    int x, y;
 };
 
 int mandelbrot(std::complex<double> c, int maxIter);

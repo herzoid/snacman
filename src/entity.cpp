@@ -45,7 +45,7 @@ void Entity::fix_turn_data()
 // }
 
 Entity::Entity()
-    : segNum(5),
+    : segNum(10),
       position(200, 600),
       segRadius(10),
       segInterval(segRadius * intervalRatio),
@@ -202,321 +202,6 @@ void Entity::move_entity()
 void Entity::set_seg_pos(int segNumber)
 {
     // segsPos.at(segNumber).first = 0;
-}
-
-void Entity::calc_seg_position()
-{
-    Vect2f crd, crd2, fixedCrd;
-    int segCnt = segNum;
-    int detect = 0;
-
-    switch (mov.direction)
-    {
-
-    case TO_UP:
-        // Fixes initial coordinates in turning
-        for (size_t i = 1; i < segNum; i++)
-        {
-            crd = std::get<0>(segsPos.at(i - 1));
-            crd2 = std::get<0>(segsPos.at(i));
-            if (turnsPos.size() != 0)
-            {
-                fixedCrd = std::get<0>(turnsPos.at(0));
-            }
-            turnDirection turn = std::get<1>(turnsPos.at(0));
-
-            // Evaluates turn direction
-            switch (turn)
-            {
-            case FROM_LEFT_TO_UP:
-                // Calculates turn animation
-                if (abs(fixedCrd.y - crd.y) < segInterval)
-                {
-                    crd2.x = crd.x - sqrt(-pow(fixedCrd.y, 2) + 2 * crd.y * fixedCrd.y - pow(crd.y, 2) + pow(segInterval, 2));
-                }
-                else
-                {
-                    crd2.x = fixedCrd.x;
-                    segCnt--;
-                }
-
-                if (crd2.x < fixedCrd.x)
-                {
-                    crd2.y = fixedCrd.y;
-                }
-                else
-                    crd2.y = crd.y + segInterval;
-                // segsPos.at(i) = crd2;
-
-                break;
-
-            case FROM_RIGHT_TO_UP:
-                // Calculates turn animation
-                if (abs(fixedCrd.y - crd.y) < segInterval)
-                {
-                    crd2.x = crd.x + sqrt(-pow(fixedCrd.y, 2) + 2 * crd.y * fixedCrd.y - pow(crd.y, 2) + pow(segInterval, 2));
-                }
-                else
-                {
-                    crd2.x = fixedCrd.x;
-                    segCnt--;
-                }
-
-                if (crd2.x > fixedCrd.x)
-                {
-                    crd2.y = fixedCrd.y;
-                }
-                else
-                    crd2.y = crd.y + segInterval;
-                // segsPos.at(i) = crd2;
-                break;
-
-            default:
-                crd2.x = crd.x;
-                crd2.y = crd.y + segInterval;
-                // segsPos.at(i) = crd2;
-                break;
-            }
-            segsPos.at(i).first = crd2;
-
-            segsPos.at(i).second = TO_UP;
-        }
-
-        // Movement animation
-        std::get<0>(segsPos.at(0)).y -= mov.velocity;
-
-        // Defines mouth bounds
-        mouthBounds.start = 315;
-        mouthBounds.end = 225;
-
-        // Window bounds collision
-        if (std::get<0>(segsPos.at(0)).y <= segRadius)
-        {
-            std::get<0>(segsPos.at(0)).y = segRadius;
-        }
-
-        break;
-
-    case TO_RIGHT:
-        // Fixes initial coordinates in turning
-        if (turnsPos.size() != 0)
-        {
-            fixedCrd = std::get<0>(turnsPos.at(0));
-        }
-
-        for (size_t i = 1; i < segNum; i++)
-        {
-            // Vect2f crd, crd2, fixedCrd;
-            crd = std::get<0>(segsPos.at(i - 1));
-            crd2 = std::get<0>(segsPos.at(i));
-
-            switch (mov.turn)
-            {
-            case FROM_UP_TO_RIGHT:
-                // Calculates turning animation
-                if (abs(fixedCrd.x - crd.x) < segInterval)
-                {
-                    crd2.y = crd.y - sqrt(-pow(fixedCrd.x, 2) + 2 * crd.x * fixedCrd.x - pow(crd.x, 2) + pow(segInterval, 2));
-                }
-                else
-                    crd2.y = fixedCrd.y;
-
-                if (crd2.y < fixedCrd.y)
-                {
-                    crd2.x = fixedCrd.x;
-                }
-                else
-                    crd2.x = crd.x - segInterval;
-                break;
-
-            case FROM_DOWN_TO_RIGHT:
-                // Calculates turning animation
-                if (abs(fixedCrd.x - crd.x) < segInterval)
-                {
-                    crd2.y = crd.y + sqrt(-pow(fixedCrd.x, 2) + 2 * crd.x * fixedCrd.x - pow(crd.x, 2) + pow(segInterval, 2));
-                }
-                else
-                    crd2.y = fixedCrd.y;
-
-                if (crd2.y > fixedCrd.y)
-                {
-                    crd2.x = fixedCrd.x;
-                }
-                else
-                    crd2.x = crd.x - segInterval;
-                break;
-
-            default:
-                crd2.x = crd.x - segInterval;
-                crd2.y = crd.y;
-                break;
-            }
-            segsPos.at(i).first = crd2;
-            segsPos.at(i).second = TO_RIGHT;
-        }
-
-        // Movement animation
-        std::get<0>(segsPos.at(0)).x += mov.velocity;
-
-        // Defines mouth bounds
-        mouthBounds.start = 45;
-        mouthBounds.end = 315;
-
-        // Window bounds collision
-        if (std::get<0>(segsPos.at(0)).x >= dmode->w - segRadius)
-        {
-            std::get<0>(segsPos.at(0)).x = dmode->w - segRadius;
-        }
-
-        break;
-
-    case TO_DOWN:
-        // Fixes initial coordinates in turning
-        if (turnsPos.size() != 0)
-        {
-            fixedCrd = std::get<0>(turnsPos.at(0));
-        }
-
-        for (size_t i = 1; i < segNum; i++)
-        {
-            // Vect2f crd, crd2, fixedCrd;
-            crd = std::get<0>(segsPos.at(i - 1));
-            crd2 = std::get<0>(segsPos.at(i));
-
-            switch (mov.turn)
-            {
-            case FROM_LEFT_TO_DOWN:
-                // Calculates turning animation
-                if (abs(fixedCrd.y - crd.y) < segInterval)
-                {
-                    crd2.x = crd.x - sqrt(-pow(fixedCrd.y, 2) + 2 * crd.y * fixedCrd.y - pow(crd.y, 2) + pow(segInterval, 2));
-                }
-                else
-                    crd2.x = fixedCrd.x;
-
-                if (crd2.x < fixedCrd.x)
-                {
-                    crd2.y = fixedCrd.y;
-                }
-                else
-                    crd2.y = crd.y - segInterval;
-                break;
-
-            case FROM_RIGHT_TO_DOWN:
-                // Calculates turning animation
-                if (abs(fixedCrd.y - crd.y) < segInterval)
-                {
-                    crd2.x = crd.x + sqrt(-pow(fixedCrd.y, 2) + 2 * crd.y * fixedCrd.y - pow(crd.y, 2) + pow(segInterval, 2));
-                }
-                else
-                    crd2.x = fixedCrd.x;
-
-                if (crd2.x > fixedCrd.x)
-                {
-                    crd2.y = fixedCrd.y;
-                }
-                else
-                    crd2.y = crd.y - segInterval;
-                break;
-
-            default:
-                crd2.x = crd.x;
-                crd2.y = crd.y - segInterval;
-                break;
-            }
-            segsPos.at(i).first = crd2;
-            segsPos.at(i).second = TO_DOWN;
-        }
-
-        // Movement animation
-        std::get<0>(segsPos.at(0)).y += mov.velocity;
-
-        // Define mouth bounds
-        mouthBounds.start = 135;
-        mouthBounds.end = 45;
-
-        // Window bounds collision
-        if (std::get<0>(segsPos.at(0)).y >= dmode->h - segRadius)
-        {
-            std::get<0>(segsPos.at(0)).y = dmode->h - segRadius;
-        }
-
-        break;
-
-    case TO_LEFT:
-        // Fixes initial coordinates in turning
-        if (turnsPos.size() != 0)
-        {
-            fixedCrd = std::get<0>(turnsPos.at(0));
-        }
-
-        for (size_t i = 1; i < segNum; i++)
-        {
-
-            switch (mov.turn)
-            {
-            case FROM_UP_TO_LEFT:
-                // Calculates turning animation
-                if (abs(fixedCrd.x - crd.x) < segInterval)
-                {
-                    crd2.y = crd.y - sqrt(-pow(fixedCrd.x, 2) + 2 * crd.x * fixedCrd.x - pow(crd.x, 2) + pow(segInterval, 2));
-                }
-                else
-                    crd2.y = fixedCrd.y;
-
-                if (crd2.y < fixedCrd.y)
-                {
-                    crd2.x = fixedCrd.x;
-                }
-                else
-                    crd2.x = crd.x + segInterval;
-                break;
-
-            case FROM_DOWN_TO_LEFT:
-                // Calculates turning animation
-                if (abs(fixedCrd.x - crd.x) < segInterval)
-                {
-                    crd2.y = crd.y + sqrt(-pow(fixedCrd.x, 2) + 2 * crd.x * fixedCrd.x - pow(crd.x, 2) + pow(segInterval, 2));
-                }
-                else
-                    crd2.y = fixedCrd.y;
-
-                if (crd2.y > fixedCrd.y)
-                {
-                    crd2.x = fixedCrd.x;
-                }
-                else
-                    crd2.x = crd.x + segInterval;
-                break;
-
-            default:
-                crd2.x = crd.x + segInterval;
-                crd2.y = crd.y;
-                break;
-            }
-            segsPos.at(i).first = crd2;
-            segsPos.at(i).second = TO_LEFT;
-        }
-
-        // Movement animation
-        std::get<0>(segsPos.at(0)).x -= mov.velocity;
-
-        // Define mouth bounds
-        mouthBounds.start = 225;
-        mouthBounds.end = 135;
-
-        // Window bounds collision
-        if (std::get<0>(segsPos.at(0)).x <= segRadius)
-        {
-            std::get<0>(segsPos.at(0)).x = segRadius;
-        }
-
-        break;
-
-    default:
-        break;
-    }
-    calc_mouth_angle();
 }
 
 void Entity::calc_segment_pos()
@@ -799,9 +484,9 @@ void Entity::generate_food_position()
     }
 }
 
-bool Entity::find_the_food()
+bool Entity::grab_the_food(sound &sndObj)
 {
-    int grabRadius = segRadius / 1.5;
+    int grabRadius = segRadius / grabRatio;
     if (abs(foodPos.x - get_seg_pos(0).x) <= grabRadius && abs(foodPos.y - get_seg_pos(0).y) <= grabRadius)
     {
         foodIsDropped = false;
@@ -810,6 +495,13 @@ bool Entity::find_the_food()
     }
     else
         return false;
+}
+
+void Entity::detect_the_food()
+{
+    int deltaX, deltaY;
+    deltaX = get_seg_pos(0).x - foodPos.x;
+    deltaY = get_seg_pos(0).y - foodPos.y;
 }
 
 void Entity::body_collision()
@@ -860,6 +552,6 @@ void Entity::body_collision()
     }
 }
 
-Entity::MovementStruct::MovementStruct() : direction(TO_RIGHT), velocity(2)
+Entity::MovementStruct::MovementStruct() : direction(TO_RIGHT), velocity(3)
 {
 }

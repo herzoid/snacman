@@ -1,4 +1,5 @@
 #include <iostream>
+// #include <SDL3/SDL.h>
 #include <SDL2/SDL.h>
 
 #include <random>
@@ -9,20 +10,22 @@
 #include "../include/canvas.hpp"
 #include "../include/entity.hpp"
 #include "../include/eHandler.hpp"
+#include "../include/sound.hpp"
 
 #define FONTNAME "/usr/share/fonts/TTF/DejaVuSansMono.ttf"
+#define adjustedFPS 60
 
 int main(int argc, char const *argv[])
 {
     // std::cout << argv[0] << "\n";
 
-    int dp = 1;
     const int scrW = 1024;
     const int scrH = 768;
     const int maxRGB = 255;
 
     float p = (float)maxRGB / (float)scrW;
     Canvas newCanvas("SDL test", scrW, scrH);
+    sound sndEng;
 
     if (newCanvas.is_init())
     {
@@ -46,9 +49,15 @@ int main(int argc, char const *argv[])
 
         Entity snake = Entity();
 
+        sndEng.open_snd_device();
+
+        bool enbSnd;
+
         // Main loop
         while (!quit)
         {
+            // sndEng.play_sound();
+            // Frame start time
             Uint64 frameStart = SDL_GetTicks64();
             Uint64 frameCount;
 
@@ -66,11 +75,16 @@ int main(int argc, char const *argv[])
             snake.calc_segment_pos();
 
             newCanvas.render_entity(&snake, r, g, b, 255);
+            // newCanvas.render_lent(&snake);
 
             snake.generate_food_position();
             newCanvas.render_circle(snake.get_food_pos(), 3, r, g, b, 255);
 
-            snake.find_the_food();
+            if (snake.grab_the_food(sndEng))
+            {
+                sndEng.play_sound(440);
+                sndEng.play_sound(880);
+            }
 
             // Vect2f crdBox(100, 200);
             // newCanvas.render_rbox(crdBox, 10, 0, r, g, b, 255);
@@ -81,28 +95,41 @@ int main(int argc, char const *argv[])
             // Time in ms for 1 frame
             Uint64 frameTime = SDL_GetTicks64() - frameStart;
 
-            if (frameTime < 1000 / 60)
+            if (frameTime < 1000 / adjustedFPS)
             {
-                SDL_Delay(1000 / 60 - frameTime);
+                SDL_Delay(1000 / adjustedFPS - frameTime);
             }
 
             frameTime = SDL_GetTicks64() - frameStart;
 
-            double FPS = 1 / static_cast<double>(frameTime) * 1000;
+            double realFPS = 1 / static_cast<double>(frameTime) * 1000;
 
             std::stringstream graphInfo;
             graphInfo << dm.w << "x" << dm.h
                       << " Time from start (ms) " << frameStart
                       << " ms/frame " << frameTime
-                      << " FPS " << static_cast<int>(FPS)
+                      << " FPS " << static_cast<int>(realFPS)
                       << " Frames from start " << ++frameCount;
             std::stringstream crdInfo;
 
-            crdInfo << "x=" << snake.get_seg_pos(0).x
-                    << " y=" << snake.get_seg_pos(0).y;
-
             int ht = newCanvas.render_text(0, 0, FONTNAME, 14, graphInfo.str(), {255, 255, 255, 0}, {0, 0, 0, 0}).h;
-            newCanvas.render_text(0, ht, FONTNAME, 14, crdInfo.str(), {255, 255, 255, 0}, {0, 0, 0, 0});
+
+            for (size_t i = 0; i < snake.get_segs_num(); i++)
+            {
+                if (i == 0)
+                {
+                    crdInfo << "segments=" << snake.get_segs_num();
+                    ht = ht + newCanvas.render_text(0, ht, FONTNAME, 10, crdInfo.str(), {255, 255, 255, 0}, {0, 0, 0, 0}).h;
+                    crdInfo.str("");
+                    crdInfo.clear();
+                }
+                // crdInfo << i
+                //         << " x=" << snake.get_seg_pos(i).x
+                //         << " y=" << snake.get_seg_pos(i).y;
+                // ht = ht + newCanvas.render_text(0, ht, FONTNAME, 10, crdInfo.str(), {255, 255, 255, 0}, {0, 0, 0, 0}).h;
+                crdInfo.str("");
+                crdInfo.clear();
+            }
         }
 
         std::cout << "Canvas created"

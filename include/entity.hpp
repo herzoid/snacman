@@ -8,9 +8,11 @@
 #include <random>
 
 #include "math.hpp"
+#include "sound.hpp"
 // #include "utils.hpp"
 
 #define intervalRatio 1.8
+#define grabRatio 1
 
 // Movement directions
 typedef enum
@@ -151,7 +153,9 @@ public:
 
     void generate_food_position();
 
-    bool find_the_food();
+    bool grab_the_food(sound &);
+
+    void detect_the_food();
 
     void body_collision();
 };

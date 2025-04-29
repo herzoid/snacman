@@ -27,7 +27,9 @@ public:
     void render_circle(Vect2f crd, int rad, int r, int g, int b, int a);
     void render_pie(Vect2f crd, int rad, int start, int end, int r, int g, int b, int a);
     void render_rbox(Vect2f crd, int diag, int rad, int r, int g, int b, int a);
+    void render_rrect(Vect2f crd, int diag, int rad, int r, int g, int b, int a);
     void render_entity(Entity *ent, int r, int g, int b, int a);
+    void render_lent(Entity *ent);
 
     /// @brief Render text on created canvas
     /// @param x X coordinate
